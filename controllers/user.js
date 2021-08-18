@@ -13,7 +13,7 @@ exports.signup = (req, res, next) => {
       .then(hash => {
         const user = new User({
           email: req.body.email,
-          password: hash   //  /!\ peut etre le pb d'apparition du mdp!!!!!!!!!!!!  
+          password: hash 
         });
         user.save()
           .then(() => res.status(201).json({ message: 'Utilisateur créé !' }))
@@ -24,17 +24,17 @@ exports.signup = (req, res, next) => {
 
 //fonction qui permettra de se connecter au site: de recuperer un utilisateur et ses données
 exports.login = (req, res, next) => {
-  User.findOne({ email: req.body.email })
+  User.findOne({ email: req.body.email }) //cherche l'email dans la bdd correspondant a celui entré par l'utilisateur
     .then(user => {
-      if (!user) {
+      if (!user) { //Si pas d'email correspondant, reponse erreur
         return res.status(401).json({ error: 'Utilisateur non trouvé !' });
       }
-      bcrypt.compare(req.body.password, user.password)
+      bcrypt.compare(req.body.password, user.password) //Compare le mdp entré avec celui dans la bdd (crypté)
         .then(valid => {
-          if (!valid) {
+          if (!valid) {//Si différent, réponse erreur 
             return res.status(401).json({ error: 'Mot de passe incorrect !' });
           }
-          res.status(200).json({
+          res.status(200).json({ //si tout correspond, reponse user et token
             userId: user._id,
             token: jwt.sign(
               { userId: user._id },
